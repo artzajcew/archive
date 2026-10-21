@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Мой архив{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Мой архив</h1><a class="btn btn-primary" href="{% url 'archive:create' %}">Добавить файл</a>
+</div>
+<form class="row g-2 mb-4">
+    <div class="col-md-5"><input class="form-control" name="q" value="{{ query }}" placeholder="Поиск"></div>
+    <div class="col-md-3"><select class="form-select" name="folder"><option value="">Все папки</option>
+        {% for folder in folders %}<option value="{{ folder.id }}">{{ folder.name }}</option>{% endfor %}
+    </select></div>
+    <div class="col-md-3"><select class="form-select" name="tag"><option value="">Все теги</option>
+        {% for tag in tags %}<option value="{{ tag.id }}">{{ tag.name }}</option>{% endfor %}
+    </select></div>
+    <div class="col-md-1"><button class="btn btn-secondary">Найти</button></div>
+</form>
+<div class="row">
+{% for item in files %}
+    <div class="col-md-4 mb-3"><div class="card h-100"><div class="card-body">
+        <h5><a href="{% url 'archive:detail' item.pk %}">{{ item.title }}</a></h5>
+        <p class="text-muted">{{ item.folder|default:"Без папки" }}</p>
+        {% for tag in item.tags.all %}<span class="badge text-bg-info">{{ tag.name }}</span>{% endfor %}
+    </div></div></div>
+{% empty %}<p>Файлов пока нет.</p>{% endfor %}
+</div>
+{% endblock %}

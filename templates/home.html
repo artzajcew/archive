@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="p-5 bg-light rounded">
+    <h1>Личный архив</h1>
+    <p>Храните файлы по папкам и находите их по тегам и названию.</p>
+    {% if user.is_authenticated %}
+        <a class="btn btn-primary" href="{% url 'archive:list' %}">Открыть архив</a>
+    {% else %}
+        <a class="btn btn-primary" href="{% url 'archive:register' %}">Создать аккаунт</a>
+    {% endif %}
+</div>
+{% endblock %}

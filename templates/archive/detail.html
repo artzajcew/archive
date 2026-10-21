@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ item.title }}</h1>
+<p>{{ item.description|linebreaks }}</p>
+<p>Папка: {{ item.folder|default:"Без папки" }}</p>
+<p>{% for tag in item.tags.all %}<span class="badge text-bg-info">{{ tag.name }}</span>{% empty %}Тегов нет{% endfor %}</p>
+<a class="btn btn-primary" href="{{ item.file.url }}">Скачать файл</a>
+<a class="btn btn-secondary" href="{% url 'archive:edit' item.pk %}">Изменить</a>
+<form class="d-inline" method="post" action="{% url 'archive:delete' item.pk %}">
+    {% csrf_token %}<button class="btn btn-danger" data-confirm="Удалить файл?">Удалить</button>
+</form>
+{% endblock %}
