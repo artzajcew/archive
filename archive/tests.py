@@ -6,6 +6,15 @@ from .models import ArchiveFile, Folder
 
 
 class ArchiveTests(TestCase):
+    def test_logout_redirects_to_home(self):
+        user = User.objects.create_user("user", password="pass12345")
+        self.client.force_login(user)
+
+        response = self.client.post(reverse("logout"))
+
+        self.assertRedirects(response, "/")
+        self.assertNotIn("_auth_user_id", self.client.session)
+
     def test_user_sees_only_own_files(self):
         first = User.objects.create_user("first", password="pass12345")
         second = User.objects.create_user("second", password="pass12345")

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Статистика{% endblock %}
+{% block content %}
+<h1 class="mb-4">Статистика архива</h1>
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100"><div class="card-body">
+            <h2 class="h5">Файлы</h2>
+            <p class="display-6 mb-0">{{ files_count }}</p>
+        </div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100"><div class="card-body">
+            <h2 class="h5">Папки</h2>
+            <p class="display-6 mb-0">{{ folders_count }}</p>
+        </div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100"><div class="card-body">
+            <h2 class="h5">Теги</h2>
+            <p class="display-6 mb-0">{{ tags_count }}</p>
+        </div></div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100"><div class="card-body">
+            <h2 class="h5">Файлы без папки</h2>
+            <p class="display-6 mb-0">{{ unfiled_count }}</p>
+        </div></div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100"><div class="card-body">
+            <h2 class="h5">Файлы с тегами</h2>
+            <p class="display-6 mb-0">{{ tagged_count }}</p>
+        </div></div>
+    </div>
+</div>
+{% endblock %}

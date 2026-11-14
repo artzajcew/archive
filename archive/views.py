@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -11,7 +12,13 @@ from .models import ArchiveFile, Folder, Tag
 
 
 def home(request):
+    if request.user.is_authenticated:
+        return redirect("archive:list")
     return render(request, "home.html")
+
+
+def custom_404(request, exception):
+    return render(request, "404.html", status=404)
 
 
 def register(request):
@@ -37,13 +44,31 @@ def file_list(request):
         files = files.filter(folder_id=folder_id)
     if tag_id:
         files = files.filter(tags__id=tag_id)
+    files = files.distinct()
+    page_obj = Paginator(files, 6).get_page(request.GET.get("page"))
     context = {
-        "files": files.distinct(),
+        "files": page_obj,
+        "page_obj": page_obj,
         "folders": Folder.objects.filter(owner=request.user),
         "tags": Tag.objects.filter(owner=request.user),
         "query": query,
+        "folder_id": folder_id,
+        "tag_id": tag_id,
     }
     return render(request, "archive/list.html", context)
+
+
+@login_required
+def statistics(request):
+    files = ArchiveFile.objects.filter(owner=request.user)
+    context = {
+        "files_count": files.count(),
+        "folders_count": Folder.objects.filter(owner=request.user).count(),
+        "tags_count": Tag.objects.filter(owner=request.user).count(),
+        "unfiled_count": files.filter(folder__isnull=True).count(),
+        "tagged_count": files.filter(tags__isnull=False).distinct().count(),
+    }
+    return render(request, "archive/statistics.html", context)
 
 
 @login_required

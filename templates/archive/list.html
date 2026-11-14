@@ -7,10 +7,10 @@
 <form class="row g-2 mb-4">
     <div class="col-md-5"><input class="form-control" name="q" value="{{ query }}" placeholder="Поиск"></div>
     <div class="col-md-3"><select class="form-select" name="folder"><option value="">Все папки</option>
-        {% for folder in folders %}<option value="{{ folder.id }}">{{ folder.name }}</option>{% endfor %}
+        {% for folder in folders %}<option value="{{ folder.id }}" {% if folder_id == folder.id|stringformat:"s" %}selected{% endif %}>{{ folder.name }}</option>{% endfor %}
     </select></div>
     <div class="col-md-3"><select class="form-select" name="tag"><option value="">Все теги</option>
-        {% for tag in tags %}<option value="{{ tag.id }}">{{ tag.name }}</option>{% endfor %}
+        {% for tag in tags %}<option value="{{ tag.id }}" {% if tag_id == tag.id|stringformat:"s" %}selected{% endif %}>{{ tag.name }}</option>{% endfor %}
     </select></div>
     <div class="col-md-1"><button class="btn btn-secondary">Найти</button></div>
 </form>
@@ -23,4 +23,21 @@
     </div></div></div>
 {% empty %}<p>Файлов пока нет.</p>{% endfor %}
 </div>
+{% if page_obj.has_other_pages %}
+<nav aria-label="Навигация по страницам">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}{% if folder_id %}&amp;folder={{ folder_id }}{% endif %}{% if tag_id %}&amp;tag={{ tag_id }}{% endif %}">Назад</a>
+            </li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">{{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}{% if folder_id %}&amp;folder={{ folder_id }}{% endif %}{% if tag_id %}&amp;tag={{ tag_id }}{% endif %}">Вперёд</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
 {% endblock %}
