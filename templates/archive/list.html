@@ -6,18 +6,20 @@
 </div>
 <form class="row g-2 mb-4">
     <div class="col-md-5"><input class="form-control" name="q" value="{{ query }}" placeholder="Поиск"></div>
-    <div class="col-md-3"><select class="form-select" name="folder"><option value="">Все папки</option>
+    <div class="col-md-2"><select class="form-select" name="folder"><option value="">Все папки</option>
         {% for folder in folders %}<option value="{{ folder.id }}" {% if folder_id == folder.id|stringformat:"s" %}selected{% endif %}>{{ folder.name }}</option>{% endfor %}
     </select></div>
-    <div class="col-md-3"><select class="form-select" name="tag"><option value="">Все теги</option>
+    <div class="col-md-2"><select class="form-select" name="tag"><option value="">Все теги</option>
         {% for tag in tags %}<option value="{{ tag.id }}" {% if tag_id == tag.id|stringformat:"s" %}selected{% endif %}>{{ tag.name }}</option>{% endfor %}
     </select></div>
+    <div class="col-md-2"><input class="form-control" type="date" name="date_from" value="{{ date_from }}" title="Дата от"></div>
+    <div class="col-md-2"><input class="form-control" type="date" name="date_to" value="{{ date_to }}" title="Дата до"></div>
     <div class="col-md-1"><button class="btn btn-secondary">Найти</button></div>
 </form>
 <div class="row">
 {% for item in files %}
     <div class="col-md-4 mb-3"><div class="card h-100"><div class="card-body">
-        <h5><a href="{% url 'archive:detail' item.pk %}">{{ item.title }}</a></h5>
+        <h5><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h5>
         <p class="text-muted">{{ item.folder|default:"Без папки" }}</p>
         {% for tag in item.tags.all %}<span class="badge text-bg-info">{{ tag.name }}</span>{% endfor %}
     </div></div></div>
@@ -28,13 +30,13 @@
     <ul class="pagination">
         {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}{% if folder_id %}&amp;folder={{ folder_id }}{% endif %}{% if tag_id %}&amp;tag={{ tag_id }}{% endif %}">Назад</a>
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}{% if folder_id %}&amp;folder={{ folder_id }}{% endif %}{% if tag_id %}&amp;tag={{ tag_id }}{% endif %}{% if date_from %}&amp;date_from={{ date_from }}{% endif %}{% if date_to %}&amp;date_to={{ date_to }}{% endif %}">Назад</a>
             </li>
         {% endif %}
         <li class="page-item active"><span class="page-link">{{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span></li>
         {% if page_obj.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}{% if folder_id %}&amp;folder={{ folder_id }}{% endif %}{% if tag_id %}&amp;tag={{ tag_id }}{% endif %}">Вперёд</a>
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}{% if folder_id %}&amp;folder={{ folder_id }}{% endif %}{% if tag_id %}&amp;tag={{ tag_id }}{% endif %}{% if date_from %}&amp;date_from={{ date_from }}{% endif %}{% if date_to %}&amp;date_to={{ date_to }}{% endif %}">Вперёд</a>
             </li>
         {% endif %}
     </ul>

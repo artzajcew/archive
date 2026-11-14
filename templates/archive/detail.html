@@ -5,8 +5,8 @@
 <p>Папка: {{ item.folder|default:"Без папки" }}</p>
 <p>{% for tag in item.tags.all %}<span class="badge text-bg-info">{{ tag.name }}</span>{% empty %}Тегов нет{% endfor %}</p>
 <a class="btn btn-primary" href="{{ item.file.url }}">Скачать файл</a>
-<a class="btn btn-secondary" href="{% url 'archive:edit' item.pk %}">Изменить</a>
-<form class="d-inline" method="post" action="{% url 'archive:delete' item.pk %}">
+<a class="btn btn-secondary" href="{% url 'archive:edit' item.slug %}">Изменить</a>
+<form class="d-inline" method="post" action="{% url 'archive:delete' item.slug %}">
     {% csrf_token %}<button class="btn btn-danger" data-confirm="Удалить файл?">Удалить</button>
 </form>
 {% endblock %}

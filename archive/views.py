@@ -38,12 +38,18 @@ def file_list(request):
     query = request.GET.get("q", "").strip()
     folder_id = request.GET.get("folder", "")
     tag_id = request.GET.get("tag", "")
+    date_from = request.GET.get("date_from", "")
+    date_to = request.GET.get("date_to", "")
     if query:
         files = files.filter(Q(title__icontains=query) | Q(description__icontains=query))
     if folder_id:
         files = files.filter(folder_id=folder_id)
     if tag_id:
         files = files.filter(tags__id=tag_id)
+    if date_from:
+        files = files.filter(created_at__date__gte=date_from)
+    if date_to:
+        files = files.filter(created_at__date__lte=date_to)
     files = files.distinct()
     page_obj = Paginator(files, 6).get_page(request.GET.get("page"))
     context = {
@@ -54,6 +60,8 @@ def file_list(request):
         "query": query,
         "folder_id": folder_id,
         "tag_id": tag_id,
+        "date_from": date_from,
+        "date_to": date_to,
     }
     return render(request, "archive/list.html", context)
 
@@ -72,8 +80,8 @@ def statistics(request):
 
 
 @login_required
-def file_detail(request, pk):
-    item = get_object_or_404(ArchiveFile.objects.prefetch_related("tags"), pk=pk, owner=request.user)
+def file_detail(request, slug):
+    item = get_object_or_404(ArchiveFile.objects.prefetch_related("tags"), slug=slug, owner=request.user)
     return render(request, "archive/detail.html", {"item": item})
 
 
@@ -93,22 +101,22 @@ def file_create(request):
 
 
 @login_required
-def file_edit(request, pk):
-    item = get_object_or_404(ArchiveFile, pk=pk, owner=request.user)
+def file_edit(request, slug):
+    item = get_object_or_404(ArchiveFile, slug=slug, owner=request.user)
     form = ArchiveFileForm(request.POST or None, request.FILES or None, instance=item)
     form.fields["folder"].queryset = Folder.objects.filter(owner=request.user)
     form.fields["tags"].queryset = Tag.objects.filter(owner=request.user)
     if form.is_valid():
         form.save()
         messages.success(request, "Изменения сохранены.")
-        return redirect("archive:detail", pk=item.pk)
+        return redirect("archive:detail", slug=item.slug)
     return render(request, "archive/form.html", {"form": form, "title": "Изменить файл"})
 
 
 @login_required
 @require_POST
-def file_delete(request, pk):
-    item = get_object_or_404(ArchiveFile, pk=pk, owner=request.user)
+def file_delete(request, slug):
+    item = get_object_or_404(ArchiveFile, slug=slug, owner=request.user)
     item.delete()
     messages.success(request, "Файл удалён.")
     return redirect("archive:list")
